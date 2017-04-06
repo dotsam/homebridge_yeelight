@@ -6,7 +6,7 @@ var MCAST_ADDR = '239.255.255.250';
 var discMsg = new Buffer('M-SEARCH * HTTP/1.1\r\nMAN: \"ssdp:discover\"\r\nST: wifi_bulb\r\n');
 
 YeeDevice = function (did, loc, model, power, bri,
-		      hue, sat, name, cb) {
+		      ct, hue, sat, name, cb) {
     this.did = did;
     var tmp = loc.split(":");
     var host = tmp[0];
@@ -21,6 +21,7 @@ YeeDevice = function (did, loc, model, power, bri,
     else
 	this.power = 0;
     this.bright = parseInt(bri,10);
+    this.ct = parseInt(ct,10);
     this.hue = parseInt(hue,10);
     this.sat = parseInt(sat,10);
     this.connected = false;
@@ -30,7 +31,7 @@ YeeDevice = function (did, loc, model, power, bri,
     this.retry_cnt = 0;
     this.propChangeCb = cb;
     
-    this.update = function(loc, power, bri, hue, sat, name) {
+    this.update = function(loc, power, bri, ct, hue, sat, name) {
 	var tmp = loc.split(":");
 	var host = tmp[0];
 	var port = tmp[1];
@@ -41,6 +42,7 @@ YeeDevice = function (did, loc, model, power, bri,
 	else
 	    this.power = 0;
 	this.bright = bri;
+  this.ct = parseInt(ct, 10);
 	this.hue = parseInt(hue, 10);
 	this.sat = parseInt(sat, 10);
 	this.name = name;
@@ -83,6 +85,9 @@ YeeDevice = function (did, loc, model, power, bri,
 			   } else if (k == 'bright') {
 			       that.bright = parseInt(v, 10);			     
                                that.propChangeCb(that, 'bright', that.bright);
+			   } else if (k == 'ct') {
+			       that.ct = parseInt(v, 10);
+                               that.propChangeCb(that, 'ct', that.ct);
 			   } else if (k == 'hue') {
 			       that.hue = parseInt(v, 10);
                                that.propChangeCb(that, 'hue', that.hue);
@@ -209,7 +214,8 @@ exports.YeeAgent = function(ip, handler){
 	power = "";
 	bright = "";
 	model = "";
-	hue = "";
+	ct = "";
+  hue = "";
 	sat = "";
 	name = "";
 
@@ -226,6 +232,8 @@ exports.YeeAgent = function(ip, handler){
 		bright = headers[i].slice(8);
 	    if (headers[i].indexOf("model:") >= 0)
 		model = headers[i].slice(7);
+	    if (headers[i].indexOf("ct:") >= 0)
+		ct = headers[i].slice(5);
 	    if (headers[i].indexOf("hue:") >= 0)
 		hue = headers[i].slice(5);
 	    if (headers[i].indexOf("sat:") >= 0)
@@ -249,6 +257,7 @@ exports.YeeAgent = function(ip, handler){
 	    this.devices[did].update(loc,
 				     power,
 				     bright,
+             ct,
 				     hue,
 				     sat, name);
 	} else {
@@ -257,6 +266,7 @@ exports.YeeAgent = function(ip, handler){
 					      model,
 					      power,
 					      bright,
+                ct,
 					      hue,
 					      sat, name,
                                               this.devPropChange 
