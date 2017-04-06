@@ -151,6 +151,13 @@ YeeDevice = function (did, loc, model, power, bri,
 		   params:[hue, sat, 'smooth', 500]};
 	this.sendCmd(req);
     }.bind(this);
+    
+    this.setColorTemperature = function (ct) {
+        this.ct = ct;
+	var req = {id:1, method:'set_ct_abx',
+		   params:[hue, sat, 'smooth', 500]};
+	this.sendCmd(req);
+    }.bind(this);
 
     this.setBlink = function () {
 	var req = {id:1, method:'start_cf',

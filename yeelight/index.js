@@ -96,7 +96,7 @@ YeePlatform.prototype = {
 		.on('set', function(value, callback) { that.exeCmd(dev.did, "brightness", value, callback);})
 		.value = dev.bright;
 
-	    if (dev.model == "color" || dev.model == "stripe" || dev.modem == "desklamp") {
+	    if (dev.model == "color" || dev.model == "stripe" || dev.model == "desklamp") {
 		lightbulbService
 		    .getCharacteristic(Characteristic.Hue)
 		    .on('set', function(value, callback) { that.exeCmd(dev.did, "hue", value, callback);})
